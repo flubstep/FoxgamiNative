@@ -31,13 +31,50 @@ let {Colors} = require('./BaseStyles');
 let FoxgamiNav = require('./FoxgamiNav');
 
 
+function pointsToSvg(points) {
+  if (points.length > 0) {
+    var path = `M ${points[0].x},${points[0].y}`;
+    points.forEach((point) => {
+      path = path + ` L ${point.x},${point.y}`;
+    });
+    return path;
+  } else {
+    return '';
+  }
+}
+
+
 class FoxgamiStory extends React.Component {
 
   constructor(props, context) {
     super(props, context);
     this.state = {
-      points: [],
+      donePaths: [],
+      currentPoints: [],
+      currentMax: 0,
     };
+  }
+
+  addTouchPoint(x, y) {
+    var newCurrentPoints = this.state.currentPoints;
+    newCurrentPoints.push({x: x, y: y});
+
+    this.setState({
+      donePaths: this.state.donePaths,
+      currentPoints: newCurrentPoints
+    });
+  }
+
+  releaseTouch() {
+    var newPaths = this.state.donePaths;
+    if (this.state.currentPoints.length > 0) {
+      newPaths.push(<Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />);
+    }
+    this.setState({
+      donePaths: newPaths,
+      currentPoints: [],
+      currentMax: this.state.currentMax + 1,
+    });
   }
 
   componentWillMount() {
@@ -53,55 +90,34 @@ class FoxgamiStory extends React.Component {
   }
 
   _handlePanResponderGrant(evt, gestureState) {
-    var newPoints = this.state.points;
-    newPoints.push({down: true, x: gestureState.x0, y: gestureState.y0 });
-    newPoints.push({down: false, x: gestureState.x0, y: gestureState.y0 });
-    this.setState({ points: newPoints });
+    this.addTouchPoint(gestureState.x0, gestureState.y0);
   }
 
   _handlePanResponderMove(evt, gestureState) {
-    var newPoints = this.state.points;
-    newPoints.push({down: false, x: gestureState.moveX, y: gestureState.moveY });
-    this.setState({ points: newPoints })
+    this.addTouchPoint(gestureState.moveX, gestureState.moveY);
   }
 
   _handlePanResponderEnd(evt, gestureState) {
-
-  }
-
-  _renderImage() {
-    <Image
-      style={styles.storyImage}
-      source={{uri: this.props.story.image_url}}
-    />
-  }
-
-  _buildPath(points) {
-    var path = "";
-    if (points.length > 0) {
-      path = "M" + points[0].x + "," + points[0].y;
-    }
-    points.forEach((point) => {
-      if (point.down) {
-        path = path + " M" + points[0].x + "," + points[0].y;
-      }
-      path = path + " L" + point.x + "," + point.y;
-    });
-    return path;
+    this.releaseTouch();
   }
 
   render() {
-    let path = this._buildPath(this.state.points);
     return (
       <View style={styles.container}
         {...this._panResponder.panHandlers}
         >
-        <Surface width={375} height={667}>
+        <Image
+          style={styles.storyImage}
+          source={{uri: this.props.story.image_url}}
+        />
+        <Surface width={375} height={667} style={styles.drawSurface}>
           <Group>
-            <Shape d={path} stroke="#FFFFFF" strokeWidth={8} />
+            {this.state.donePaths}
+            <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
           </Group>
         </Surface>
       </View>
+
       );
   }
 }
@@ -113,26 +129,17 @@ let styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.dark,
   },
-  baseText: {
-    fontFamily: 'Gill Sans',
-  },
   storyImage: {
     height: 384,
     width: 384,
   },
-  small: {
-    fontSize: 13,
-    color: Colors.subdued,
-    marginLeft: 12,
-    marginRight: 12,
-    marginBottom: 24,
-  },
-  medium: {
-    fontSize: 16,
-    margin: 12,
-    marginBottom: 6,
-    color: Colors.white,
-  },
+  drawSurface: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: 'rgba(0,0,0,0)',
+  }
+
 });
 
 module.exports = FoxgamiStory;
