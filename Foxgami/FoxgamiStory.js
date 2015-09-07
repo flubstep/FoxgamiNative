@@ -77,34 +77,26 @@ class FoxgamiStory extends React.Component {
     });
   }
 
-  componentWillMount() {
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: this._handlePanResponderGrant.bind(this),
-      onPanResponderMove: this._handlePanResponderMove.bind(this),
-      onPanResponderRelease: this._handlePanResponderEnd.bind(this),
-    });
+  _handleResponderGrant(evt) {
+    this.addTouchPoint(evt.nativeEvent.pageX, evt.nativeEvent.pageY);
   }
 
-  _handlePanResponderGrant(evt, gestureState) {
-    this.addTouchPoint(gestureState.x0, gestureState.y0);
+  _handleResponderMove(evt) {
+    this.addTouchPoint(evt.nativeEvent.pageX, evt.nativeEvent.pageY);
   }
 
-  _handlePanResponderMove(evt, gestureState) {
-    this.addTouchPoint(gestureState.moveX, gestureState.moveY);
-  }
-
-  _handlePanResponderEnd(evt, gestureState) {
+  _handleResponderEnd(evt) {
     this.releaseTouch();
   }
 
   render() {
     return (
       <View style={styles.container}
-        {...this._panResponder.panHandlers}
+        onStartShouldSetResponder={(evt) => true}
+        onMoveShouldSetResponder={(evt) => true}
+        onResponderGrant={this._handleResponderGrant.bind(this)}
+        onResponderMove={this._handleResponderMove.bind(this)}
+        onResponderRelease={this._handleResponderEnd.bind(this)}
         >
         <Image
           style={styles.storyImage}

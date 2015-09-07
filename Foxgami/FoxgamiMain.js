@@ -13,8 +13,6 @@ let {
   TouchableHighlight,
 } = React;
 
-let TimeAgo = require('react-timeago');
-
 let FoxgamiStory = require('./FoxgamiStory');
 let FoxgamiNav = require('./FoxgamiNav');
 let {Colors} = require('./BaseStyles');
