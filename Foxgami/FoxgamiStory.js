@@ -9,7 +9,8 @@ let {
   Image,
   ListView,
   PanResponder,
-  PropTypes
+  PropTypes,
+  TouchableHighlight
 } = React;
 
 let ReactART = require('ReactNativeART');
@@ -45,15 +46,33 @@ function pointsToSvg(points) {
 
 class FoxgamiStoryHeader extends React.Component {
 
+  _handlePulldown() {
+    this.props.navigator.pop();
+  }
+
+  _handleDraw() {
+    this.props.setDrawMode(true);
+  }
+
+  _handleShare() {
+    // TODO
+  }
+
   render() {
     return (
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={require('image!Pulldown')} />
+          <TouchableHighlight onPress={this._handlePulldown.bind(this)}>
+            <Image source={require('image!Pulldown')} />
+          </TouchableHighlight>
         </View>
         <View style={styles.headerRight}>
-          <Image style={styles.iconRight} source={require('image!Smilie')} />
-          <Image style={styles.iconRight} source={require('image!Share')} />
+          <TouchableHighlight onPress={this._handleDraw.bind(this)}>
+            <Image style={styles.iconRight} source={require('image!Smilie')} />
+          </TouchableHighlight>
+          <TouchableHighlight onPress={this._handleShare.bind(this)}>
+            <Image style={styles.iconRight} source={require('image!Share')} />
+          </TouchableHighlight>
         </View>
       </View>
     );
@@ -62,15 +81,29 @@ class FoxgamiStoryHeader extends React.Component {
 
 class FoxgamiDrawHeader extends React.Component {
 
+  _handleDone() {
+    this.props.setDrawMode(false);
+  }
+
+  _handleUndo() {
+    // TODO
+  }
+
   render() {
     return (
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={require('image!Cancel')} />
+          <TouchableHighlight onPress={this._handleDone.bind(this)}>
+            <Image source={require('image!Cancel')} />
+          </TouchableHighlight>
         </View>
         <View style={styles.headerRight}>
-          <Image style={styles.iconRight} source={require('image!Undo')} />
-          <Image style={styles.iconRight} source={require('image!Done')} />
+          <TouchableHighlight onPress={this._handleUndo.bind(this)}>
+            <Image style={styles.iconRight} source={require('image!Undo')} />
+          </TouchableHighlight>
+          <TouchableHighlight onPress={this._handleDone.bind(this)}>
+            <Image style={styles.iconRight} source={require('image!Done')} />
+          </TouchableHighlight>
         </View>
       </View>
     );
@@ -146,15 +179,45 @@ class FoxgamiDrawSurface extends React.Component {
 
 class FoxgamiStory extends React.Component {
 
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      drawMode: false
+    };
+  }
+
+  _setDrawMode(b) {
+    this.setState({
+      drawMode: b
+    });
+  }
+
   render() {
+    if (this.state.drawMode) {
+      var maybeDrawSurface = (<FoxgamiDrawSurface/>);
+      var header = (
+        <FoxgamiDrawHeader
+          setDrawMode={this._setDrawMode.bind(this)}
+          navigator={this.props.navigator}
+        />
+      );
+    } else {
+      var maybeDrawSurface = null;
+      var header = (
+        <FoxgamiStoryHeader
+          setDrawMode={this._setDrawMode.bind(this)}
+          navigator={this.props.navigator}
+        />
+      );
+    }
     return (
       <View style={styles.container}>
-        <FoxgamiDrawHeader/>
         <Image
           style={styles.storyImage}
           source={{uri: this.props.story.image_url}}
         />
-        <FoxgamiDrawSurface/>
+        {maybeDrawSurface}
+        {header}
       </View>
     );
   }
@@ -177,7 +240,8 @@ let styles = StyleSheet.create({
   },
   header: {
     position: 'absolute',
-    top: 32,
+    top: 0,
+    paddingTop: 32,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
