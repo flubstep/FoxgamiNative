@@ -77,8 +77,7 @@ class FoxgamiDrawHeader extends React.Component {
   }
 }
 
-
-class FoxgamiStory extends React.Component {
+class FoxgamiDrawSurface extends React.Component {
 
   constructor(props, context) {
     super(props, context);
@@ -125,27 +124,39 @@ class FoxgamiStory extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}
+      <View
+        style={styles.drawContainer}
         onStartShouldSetResponder={(evt) => true}
         onMoveShouldSetResponder={(evt) => true}
         onResponderGrant={this._handleResponderGrant.bind(this)}
         onResponderMove={this._handleResponderMove.bind(this)}
         onResponderRelease={this._handleResponderEnd.bind(this)}
         >
-        <FoxgamiDrawHeader/>
-        <Image
-          style={styles.storyImage}
-          source={{uri: this.props.story.image_url}}
-        />
-        <Surface width={375} height={667} style={styles.drawSurface}>
+        <Surface style={styles.drawSurface} width={375} height={667}>
           <Group>
             {this.state.donePaths}
             <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
           </Group>
         </Surface>
       </View>
+    )
+  }
+}
 
-      );
+
+class FoxgamiStory extends React.Component {
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <FoxgamiDrawHeader/>
+        <Image
+          style={styles.storyImage}
+          source={{uri: this.props.story.image_url}}
+        />
+        <FoxgamiDrawSurface/>
+      </View>
+    );
   }
 }
 
@@ -155,6 +166,14 @@ let styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.dark,
+  },
+  drawContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: 667,
+    width: 375,
+    backgroundColor: 'rgba(0,0,0,0)',
   },
   header: {
     position: 'absolute',
