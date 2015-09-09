@@ -43,6 +43,40 @@ function pointsToSvg(points) {
   }
 }
 
+class FoxgamiStoryHeader extends React.Component {
+
+  render() {
+    return (
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Image source={require('image!Pulldown')} />
+        </View>
+        <View style={styles.headerRight}>
+          <Image style={styles.iconRight} source={require('image!Smilie')} />
+          <Image style={styles.iconRight} source={require('image!Share')} />
+        </View>
+      </View>
+    );
+  }
+}
+
+class FoxgamiDrawHeader extends React.Component {
+
+  render() {
+    return (
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Image source={require('image!Cancel')} />
+        </View>
+        <View style={styles.headerRight}>
+          <Image style={styles.iconRight} source={require('image!Undo')} />
+          <Image style={styles.iconRight} source={require('image!Done')} />
+        </View>
+      </View>
+    );
+  }
+}
+
 
 class FoxgamiStory extends React.Component {
 
@@ -98,6 +132,7 @@ class FoxgamiStory extends React.Component {
         onResponderMove={this._handleResponderMove.bind(this)}
         onResponderRelease={this._handleResponderEnd.bind(this)}
         >
+        <FoxgamiDrawHeader/>
         <Image
           style={styles.storyImage}
           source={{uri: this.props.story.image_url}}
@@ -121,9 +156,28 @@ let styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.dark,
   },
+  header: {
+    position: 'absolute',
+    top: 32,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: 375,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    marginRight: 24,
+  },
+  iconRight: {
+    marginLeft: 32,
+  },
+  headerLeft: {
+    marginLeft: 17,
+  },
   storyImage: {
-    height: 384,
-    width: 384,
+    height: 375,
+    width: 375,
   },
   drawSurface: {
     position: 'absolute',
