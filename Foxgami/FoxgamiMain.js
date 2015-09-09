@@ -103,8 +103,8 @@ let styles = StyleSheet.create({
     fontFamily: 'Gill Sans',
   },
   storyImage: {
-    height: 384,
-    width: 384,
+    height: 375,
+    width: 375,
   },
   logo: {
     color: Colors.white,
