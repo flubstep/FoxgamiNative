@@ -10,7 +10,7 @@ let {
   ListView,
   PanResponder,
   PropTypes,
-  TouchableHighlight
+  TouchableOpacity
 } = React;
 
 let ReactART = require('ReactNativeART');
@@ -44,6 +44,18 @@ function pointsToSvg(points) {
   }
 }
 
+class IconButton extends React.Component {
+
+  render() {
+    // let imageStyle = this.props.location == "right" ? styles.iconRight : styles.iconLeft;
+    return (
+      <TouchableOpacity style={styles.iconButton} onPress={this.props.onPress}>
+        <Image style={styles.icon} source={this.props.source} />
+      </TouchableOpacity>
+    )
+  }
+}
+
 class FoxgamiStoryHeader extends React.Component {
 
   _handlePulldown() {
@@ -62,17 +74,23 @@ class FoxgamiStoryHeader extends React.Component {
     return (
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableHighlight onPress={this._handlePulldown.bind(this)}>
-            <Image source={require('image!Pulldown')} />
-          </TouchableHighlight>
+          <IconButton
+            onPress={this._handlePulldown.bind(this)}
+            source={require('image!Pulldown')}
+            location={"left"}
+            />
         </View>
         <View style={styles.headerRight}>
-          <TouchableHighlight onPress={this._handleDraw.bind(this)}>
-            <Image style={styles.iconRight} source={require('image!Smilie')} />
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this._handleShare.bind(this)}>
-            <Image style={styles.iconRight} source={require('image!Share')} />
-          </TouchableHighlight>
+          <IconButton
+            onPress={this._handleDraw.bind(this)}
+            source={require('image!Smilie')}
+            location={"right"}
+            />
+          <IconButton
+            onPress={this._handleShare.bind(this)}
+            source={require('image!Share')}
+            location={"right"}
+            />
         </View>
       </View>
     );
@@ -93,17 +111,23 @@ class FoxgamiDrawHeader extends React.Component {
     return (
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableHighlight onPress={this._handleDone.bind(this)}>
-            <Image source={require('image!Cancel')} />
-          </TouchableHighlight>
+          <IconButton
+            onPress={this._handleDone.bind(this)}
+            source={require('image!Cancel')}
+            location={"left"}
+            />
         </View>
         <View style={styles.headerRight}>
-          <TouchableHighlight onPress={this._handleUndo.bind(this)}>
-            <Image style={styles.iconRight} source={require('image!Undo')} />
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this._handleDone.bind(this)}>
-            <Image style={styles.iconRight} source={require('image!Done')} />
-          </TouchableHighlight>
+          <IconButton
+            onPress={this._handleUndo.bind(this)}
+            source={require('image!Undo')}
+            location={"right"}
+            />
+          <IconButton
+            onPress={this._handleDone.bind(this)}
+            source={require('image!Done')}
+            location={"right"}
+          />
         </View>
       </View>
     );
@@ -250,13 +274,17 @@ let styles = StyleSheet.create({
   },
   headerRight: {
     flexDirection: 'row',
-    marginRight: 24,
+    marginRight: 8,
   },
-  iconRight: {
-    marginLeft: 32,
+  icon: {
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  iconButton: {
+    height: 32,
   },
   headerLeft: {
-    marginLeft: 17,
+
   },
   storyImage: {
     height: 375,
