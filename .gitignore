@@ -28,4 +28,3 @@ node_modules/
 npm-debug.log
 .npmignore
 .flowconfig
-main.jsbundle
