@@ -33,8 +33,8 @@ let styles = StyleSheet.create({
     alignItems: 'center',
     width: 28,
     height: 28,
-    margin: 8,
-    marginTop: 24,
+    margin: 10,
+    marginTop: 26,
   },
 });
 
