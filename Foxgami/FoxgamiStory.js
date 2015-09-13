@@ -44,6 +44,26 @@ function pointsToSvg(points) {
   }
 }
 
+
+class Reaction {
+
+  constructor() {
+    this.gestures = [];
+  }
+
+  addGesture(points) {
+    if (points.length > 0) {
+      this.gestures.push(points);
+    }
+  }
+
+  empty() {
+    return this.gestures.length === 0;
+  }
+
+}
+
+
 class IconButton extends React.Component {
 
   render() {
@@ -151,7 +171,8 @@ class FoxgamiDrawSurface extends React.Component {
 
     this.setState({
       donePaths: this.state.donePaths,
-      currentPoints: newCurrentPoints
+      currentPoints: newCurrentPoints,
+      currentMax: this.state.currentMax
     });
   }
 
@@ -160,6 +181,7 @@ class FoxgamiDrawSurface extends React.Component {
     if (this.state.currentPoints.length > 0) {
       newPaths.push(<Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />);
     }
+    this.props.reactionStore.addGesture(this.state.currentPoints);
     this.setState({
       donePaths: newPaths,
       currentPoints: [],
@@ -201,24 +223,44 @@ class FoxgamiDrawSurface extends React.Component {
 }
 
 
+class FoxgamiReplaySurface extends React.Component {
+
+  render() {
+    <View style={styles.drawContainer}>
+      <Surface style={styles.drawSurface} width={375} height={667}>
+        <Group>
+          {this.state.donePaths}
+          <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
+        </Group>
+      </Surface>
+    </View>
+  }
+
+}
+
+
 class FoxgamiStory extends React.Component {
 
   constructor(props, context) {
     super(props, context);
     this.state = {
+      reactionStore: null,
       drawMode: false
     };
   }
 
   _setDrawMode(b) {
+    // If 'draw' is hit again, then clear the current reaction
     this.setState({
+      reactionStore: b ? (new Reaction()) : this.state.reactionStore,
       drawMode: b
     });
+    console.log(this.state.reactionStore);
   }
 
   render() {
     if (this.state.drawMode) {
-      var maybeDrawSurface = (<FoxgamiDrawSurface/>);
+      var maybeDrawSurface = (<FoxgamiDrawSurface reactionStore={this.state.reactionStore}/>);
       var header = (
         <FoxgamiDrawHeader
           setDrawMode={this._setDrawMode.bind(this)}

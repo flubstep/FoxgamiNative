@@ -11,14 +11,18 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="logo_foxgami_profile.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="GEa-e6-Gtb">
-                    <rect key="frame" x="165" y="165" width="150" height="150"/>
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="Icon-72" translatesAutoresizingMaskIntoConstraints="NO" id="dkH-PU-JFz">
+                    <rect key="frame" x="204" y="204" width="72" height="72"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="72" id="kPa-2B-hFL"/>
+                        <constraint firstAttribute="height" constant="72" id="wyQ-UO-vna"/>
+                    </constraints>
                 </imageView>
             </subviews>
-            <color key="backgroundColor" red="0.14509803921568626" green="0.14509803921568626" blue="0.14509803921568626" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.12941176470588234" green="0.12941176470588234" blue="0.12941176470588234" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
-                <constraint firstAttribute="centerY" secondItem="GEa-e6-Gtb" secondAttribute="centerY" id="IfF-C2-2Bu"/>
-                <constraint firstAttribute="centerX" secondItem="GEa-e6-Gtb" secondAttribute="centerX" id="jfr-Tq-0xn"/>
+                <constraint firstAttribute="centerX" secondItem="dkH-PU-JFz" secondAttribute="centerX" id="1sb-JI-Q8J"/>
+                <constraint firstAttribute="centerY" secondItem="dkH-PU-JFz" secondAttribute="centerY" id="x70-0m-R6y"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -26,6 +30,6 @@
         </view>
     </objects>
     <resources>
-        <image name="logo_foxgami_profile.jpg" width="150" height="150"/>
+        <image name="Icon-72" width="72" height="72"/>
     </resources>
 </document>

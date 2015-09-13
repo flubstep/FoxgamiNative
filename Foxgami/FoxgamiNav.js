@@ -18,7 +18,7 @@ class FoxgamiNav extends React.Component {
       <View style={styles.container}>
         <Image
           style={styles.iconNavLogo}
-          source={{uri: "http://www.foxgami.com/client/resources/logo_large.png"}}
+          source={require('image!logo')}
         />
       </View>
     );
@@ -31,8 +31,8 @@ let styles = StyleSheet.create({
   },
   iconNavLogo: {
     alignItems: 'center',
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
     margin: 8,
     marginTop: 24,
   },
