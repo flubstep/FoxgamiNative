@@ -266,20 +266,22 @@ class FoxgamiDrawSurface extends React.Component {
 
   render() {
     return (
-      <View
-        style={styles.drawContainer}
-        onStartShouldSetResponder={(evt) => true}
-        onMoveShouldSetResponder={(evt) => true}
-        onResponderGrant={this._handleResponderGrant.bind(this)}
-        onResponderMove={this._handleResponderMove.bind(this)}
-        onResponderRelease={this._handleResponderEnd.bind(this)}
-        >
-        <Surface style={styles.drawSurface} width={375} height={667}>
-          <Group>
-            {this.state.donePaths}
-            <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
-          </Group>
-        </Surface>
+      <View>
+        <View
+          style={styles.drawContainer}
+          onStartShouldSetResponder={(evt) => true}
+          onMoveShouldSetResponder={(evt) => true}
+          onResponderGrant={this._handleResponderGrant.bind(this)}
+          onResponderMove={this._handleResponderMove.bind(this)}
+          onResponderRelease={this._handleResponderEnd.bind(this)}
+          >
+          <Surface style={styles.drawSurface} width={375} height={667}>
+            <Group>
+              {this.state.donePaths}
+              <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
+            </Group>
+          </Surface>
+        </View>
         <FoxgamiDrawHeader
           stopDrawing={this.props.stopDrawing}
           saveReaction={() => this.props.saveReaction(this.reaction)}
@@ -307,13 +309,15 @@ var FoxgamiReplaySurface = React.createClass({
 
   render() {
     return (
-      <View style={styles.drawContainer}>
-        <Surface style={styles.drawSurface} width={375} height={667}>
-          <Group>
-            {this.state.donePaths}
-            <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
-          </Group>
-        </Surface>
+      <View>
+        <View style={styles.drawContainer}>
+          <Surface style={styles.drawSurface} width={375} height={667}>
+            <Group>
+              {this.state.donePaths}
+              <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
+            </Group>
+          </Surface>
+        </View>
         <FoxgamiStoryHeader
           startDrawing={this.props.startDrawing}
           share={this.props.playReaction}
