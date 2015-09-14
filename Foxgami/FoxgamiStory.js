@@ -422,6 +422,7 @@ class FoxgamiStory extends React.Component {
     } else {
       var drawSurface = (
         <FoxgamiReplaySurface
+          key={new Date()}
           reaction={this.state.playingReaction}
           startDrawing={this._startDrawing.bind(this)}
           playReaction={this._playLatestReaction.bind(this)}
