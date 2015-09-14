@@ -266,9 +266,8 @@ class FoxgamiDrawSurface extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={styles.drawContainer}>
         <View
-          style={styles.drawContainer}
           onStartShouldSetResponder={(evt) => true}
           onMoveShouldSetResponder={(evt) => true}
           onResponderGrant={this._handleResponderGrant.bind(this)}
@@ -307,26 +306,6 @@ var FoxgamiReplaySurface = React.createClass({
     };
   },
 
-  render() {
-    return (
-      <View>
-        <View style={styles.drawContainer}>
-          <Surface style={styles.drawSurface} width={375} height={667}>
-            <Group>
-              {this.state.donePaths}
-              <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
-            </Group>
-          </Surface>
-        </View>
-        <FoxgamiStoryHeader
-          startDrawing={this.props.startDrawing}
-          share={this.props.playReaction}
-          navigator={this.props.navigator}
-        />
-      </View>
-    );
-  },
-
   componentDidMount() {
     this.setInterval(this.onTick, 20);
   },
@@ -363,6 +342,24 @@ var FoxgamiReplaySurface = React.createClass({
       nextState.currentPoints = reaction.lastReplayedGesture().slice();
     }
     this.setState(nextState);
+  },
+
+  render() {
+    return (
+      <View style={styles.drawContainer}>
+        <Surface style={styles.drawSurface} width={375} height={667}>
+          <Group>
+            {this.state.donePaths}
+            <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
+          </Group>
+        </Surface>
+        <FoxgamiStoryHeader
+          startDrawing={this.props.startDrawing}
+          share={this.props.playReaction}
+          navigator={this.props.navigator}
+        />
+      </View>
+    );
   }
 
 })
