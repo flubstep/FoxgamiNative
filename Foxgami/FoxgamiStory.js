@@ -45,6 +45,12 @@ function pointsToSvg(points) {
 }
 
 
+let Modes = {
+  viewing: 1,
+  drawing: 2,
+};
+
+
 class Reaction {
 
   constructor(gestures) {
@@ -129,11 +135,11 @@ class FoxgamiStoryHeader extends React.Component {
   }
 
   _handleDraw() {
-    this.props.setDrawMode(true);
+    this.props.startDrawing();
   }
 
   _handleShare() {
-    // TODO
+    this.props.share();
   }
 
   render() {
@@ -165,8 +171,13 @@ class FoxgamiStoryHeader extends React.Component {
 
 class FoxgamiDrawHeader extends React.Component {
 
+  _handleCancel() {
+    this.props.stopDrawing();
+  }
+
   _handleDone() {
-    this.props.setDrawMode(false);
+    this.props.saveReaction();
+    this.props.stopDrawing();
   }
 
   _handleUndo() {
@@ -178,7 +189,7 @@ class FoxgamiDrawHeader extends React.Component {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <IconButton
-            onPress={this._handleDone.bind(this)}
+            onPress={this._handleCancel.bind(this)}
             source={require('image!Cancel')}
             location={"left"}
             />
@@ -209,6 +220,7 @@ class FoxgamiDrawSurface extends React.Component {
       currentPoints: [],
       currentMax: 0,
     };
+    this.reaction = new Reaction();
   }
 
   addTouchPoint(x, y) {
@@ -225,9 +237,14 @@ class FoxgamiDrawSurface extends React.Component {
   releaseTouch() {
     var newPaths = this.state.donePaths;
     if (this.state.currentPoints.length > 0) {
-      newPaths.push(<Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />);
+      newPaths.push(<Shape
+        key={this.state.currentMax}
+        d={pointsToSvg(this.state.currentPoints)}
+        stroke="#FFFFFF"
+        strokeWidth={8}
+      />);
     }
-    this.props.reactionStore.addGesture(this.state.currentPoints);
+    this.reaction.addGesture(this.state.currentPoints);
     this.setState({
       donePaths: newPaths,
       currentPoints: [],
@@ -263,6 +280,10 @@ class FoxgamiDrawSurface extends React.Component {
             <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
           </Group>
         </Surface>
+        <FoxgamiDrawHeader
+          stopDrawing={this.props.stopDrawing}
+          saveReaction={() => this.props.saveReaction(this.reaction)}
+        />
       </View>
     )
   }
@@ -293,6 +314,11 @@ var FoxgamiReplaySurface = React.createClass({
             <Shape key={this.state.currentMax} d={pointsToSvg(this.state.currentPoints)} stroke="#FFFFFF" strokeWidth={8} />
           </Group>
         </Surface>
+        <FoxgamiStoryHeader
+          startDrawing={this.props.startDrawing}
+          share={this.props.playReaction}
+          navigator={this.props.navigator}
+        />
       </View>
     );
   },
@@ -302,12 +328,13 @@ var FoxgamiReplaySurface = React.createClass({
   },
 
   onTick() {
-    if (this.state.complete) {
-      return;
-    }
     if (!this.props.reaction) {
       return;
     }
+    if (this.state.complete) {
+      return;
+    }
+
     let reaction = this.props.reaction;
     let nextState = this.state;
 
@@ -342,41 +369,61 @@ class FoxgamiStory extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      reactionStore: null,
-      drawMode: false
+      playingReaction: null,
+      reactions: [],
+      mode: Modes.viewing
     };
   }
 
-  _setDrawMode(b) {
-    // If 'draw' is hit again, then clear the current reaction
+  _saveReaction(reaction) {
     this.setState({
-      reactionStore: b ? (new Reaction()) : this.state.reactionStore,
-      drawMode: b
+      reactions: this.state.reactions.concat([reaction]),
+    });
+  }
+
+  // TODO: remove once not testing
+  _playLatestReaction() {
+    if (this.state.reactions.length > 0) {
+      let reaction = this.state.reactions[this.state.reactions.length - 1];
+      this._playReaction(reaction.copy());
+    }
+  }
+
+  _playReaction(reaction) {
+    this.setState({
+      playingReaction: reaction,
+      mode: Modes.viewing
+    });
+  }
+
+  _startDrawing(mode) {
+    this.setState({
+      playingReaction: null,
+      mode: Modes.drawing
+    });
+  }
+
+  _stopDrawing(mode) {
+    this.setState({
+      mode: Modes.viewing
     });
   }
 
   render() {
-    if (this.state.drawMode) {
-      var maybeDrawSurface = (
+    if (this.state.mode === Modes.drawing) {
+      var drawSurface = (
         <FoxgamiDrawSurface
-          reactionStore={this.state.reactionStore}
-        />
-      );
-      var header = (
-        <FoxgamiDrawHeader
-          setDrawMode={this._setDrawMode.bind(this)}
+          stopDrawing={this._stopDrawing.bind(this)}
+          saveReaction={this._saveReaction.bind(this)}
           navigator={this.props.navigator}
         />
       );
     } else {
-      var maybeDrawSurface = (
+      var drawSurface = (
         <FoxgamiReplaySurface
-          reaction={this.state.reactionStore}
-        />
-      );
-      var header = (
-        <FoxgamiStoryHeader
-          setDrawMode={this._setDrawMode.bind(this)}
+          reaction={this.state.playingReaction}
+          startDrawing={this._startDrawing.bind(this)}
+          playReaction={this._playLatestReaction.bind(this)}
           navigator={this.props.navigator}
         />
       );
@@ -387,8 +434,7 @@ class FoxgamiStory extends React.Component {
           style={styles.storyImage}
           source={{uri: this.props.story.image_url}}
         />
-        {maybeDrawSurface}
-        {header}
+        {drawSurface}
       </View>
     );
   }
