@@ -31,6 +31,10 @@ let TimerMixin = require('react-timer-mixin');
 
 let {Colors} = require('./BaseStyles');
 let FoxgamiNav = require('./FoxgamiNav');
+let Firebase = require('firebase');
+
+
+let rootRef = new Firebase('https://foxgami.firebaseio.com/');
 
 
 function pointsToSvg(points) {
@@ -43,6 +47,20 @@ function pointsToSvg(points) {
   } else {
     return '';
   }
+}
+
+
+function objectToArray(obj) {
+  if (!obj) {
+    return [];
+  }
+  var ret = [];
+  var ii = 0;
+  while (typeof(obj[ii]) !== "undefined") {
+    ret.push(obj[ii]);
+    ii++;
+  }
+  return ret;
 }
 
 
@@ -419,6 +437,7 @@ class FoxgamiStory extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    this.firebaseRef = rootRef.child('reactions').child(this.props.story.id);
     this.state = {
       playingReaction: null,
       reactions: [],
@@ -426,10 +445,29 @@ class FoxgamiStory extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.firebaseRef.on('value', ((container) => {
+      let reactionsRaw = objectToArray(container.val());
+      let reactions = reactionsRaw.map(
+        (rawObj) => {
+          let rawList = objectToArray(rawObj);
+          console.log(rawList);
+          return new Reaction(rawList);
+        }
+      );
+      this.setState({
+        reactions: reactions
+      });
+    }));
+  }
+
   _saveReaction(reaction) {
-    this.setState({
-      reactions: this.state.reactions.concat([reaction]),
-    });
+    if (!reaction.empty()) {
+      this.firebaseRef.transaction((reactions) => {
+        reactions = reactions || [];
+        return reactions.concat([reaction.gestures]);
+      });
+    }
   }
 
   // TODO: remove once not testing
@@ -548,7 +586,7 @@ let styles = StyleSheet.create({
     height: 32,
   },
   headerLeft: {
-
+    flexDirection: 'row',
   },
   storyImage: {
     height: 375,
@@ -573,7 +611,7 @@ let styles = StyleSheet.create({
     width: iconSize,
     borderRadius: iconSize / 2,
     marginTop: 0,
-    marginRight: 8,
+    marginRight: 12,
     backgroundColor: Colors.purple
   },
   replayKey: {
