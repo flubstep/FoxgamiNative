@@ -10,7 +10,8 @@ let {
   ListView,
   PanResponder,
   PropTypes,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } = React;
 
 let ReactART = require('ReactNativeART');
@@ -362,7 +363,56 @@ var FoxgamiReplaySurface = React.createClass({
     );
   }
 
-})
+});
+
+
+class FoxgamiReactionPlayer extends React.Component {
+
+  play() {
+    this.props.playReaction(this.props.reaction.copy());
+  }
+
+  render() {
+    return (
+      <TouchableOpacity onPress={this.play.bind(this)}>
+        <View style={styles.replayIcon}>
+          <Text style={styles.replayKey}>{this.props.replayIndex}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+}
+
+
+class FoxgamiReactionPlayerList extends React.Component {
+
+  renderReaction(reaction, index) {
+    return (
+      <FoxgamiReactionPlayer
+        key={index}
+        playReaction={this.props.playReaction}
+        reaction={reaction}
+        replayIndex={index+1}
+      />);
+  }
+
+  render() {
+    return (
+      <View style={styles.replayList}>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          automaticallyAdjustContentInsets={false}
+          directionalLockEnabled={true}
+          >
+          {this.props.reactionList.map(this.renderReaction.bind(this))}
+        </ScrollView>
+      </View>
+    );
+  }
+}
 
 
 class FoxgamiStory extends React.Component {
@@ -410,9 +460,9 @@ class FoxgamiStory extends React.Component {
     });
   }
 
-  render() {
+  renderSurface() {
     if (this.state.mode === Modes.drawing) {
-      var drawSurface = (
+      return (
         <FoxgamiDrawSurface
           stopDrawing={this._stopDrawing.bind(this)}
           saveReaction={this._saveReaction.bind(this)}
@@ -420,7 +470,7 @@ class FoxgamiStory extends React.Component {
         />
       );
     } else {
-      var drawSurface = (
+      return (
         <FoxgamiReplaySurface
           key={new Date()}
           reaction={this.state.playingReaction}
@@ -430,17 +480,36 @@ class FoxgamiStory extends React.Component {
         />
       );
     }
+  }
+
+  renderPlayerList() {
+    if (this.state.mode === Modes.viewing) {
+      return (
+        <FoxgamiReactionPlayerList
+          reactionList={this.state.reactions}
+          playReaction={this._playReaction.bind(this)}
+        />
+      );
+    } else {
+      return null;
+    }
+  }
+
+  render() {
     return (
       <View style={styles.container}>
         <Image
           style={styles.storyImage}
           source={{uri: this.props.story.image_url}}
         />
-        {drawSurface}
+        {this.renderSurface()}
+        {this.renderPlayerList()}
       </View>
     );
   }
 }
+
+let iconSize = 48;
 
 let styles = StyleSheet.create({
   container: {
@@ -489,6 +558,31 @@ let styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
+    backgroundColor: 'rgba(0,0,0,0)',
+  },
+  replayList: {
+    position: 'absolute',
+    height: iconSize,
+    bottom: 16,
+    left: 16,
+    width: 375 - (16*2),
+    padding: 0,
+  },
+  replayIcon: {
+    height: iconSize,
+    width: iconSize,
+    borderRadius: iconSize / 2,
+    marginTop: 0,
+    marginRight: 8,
+    backgroundColor: Colors.purple
+  },
+  replayKey: {
+    textAlign: "center",
+    color: Colors.white,
+    opacity: 0.4,
+    lineHeight: iconSize - 10,
+    fontSize: 24,
+    fontWeight: "500",
     backgroundColor: 'rgba(0,0,0,0)',
   }
 
