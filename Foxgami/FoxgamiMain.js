@@ -95,7 +95,7 @@ let styles = StyleSheet.create({
   },
   feed: {
     alignItems: 'center',
-    backgroundColor: Colors.dark,
+    backgroundColor: Colors.white,
     borderRadius: 6,
     flex: 1,
   },
@@ -112,7 +112,7 @@ let styles = StyleSheet.create({
   },
   xsmall: {
     fontSize: 10,
-    color: Colors.white,
+    color: Colors.dark,
   },
   small: {
     fontSize: 13,
@@ -125,7 +125,7 @@ let styles = StyleSheet.create({
     fontSize: 16,
     margin: 12,
     marginBottom: 6,
-    color: Colors.white,
+    color: Colors.dark,
   },
 });
 

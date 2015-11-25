@@ -554,7 +554,7 @@ let styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.dark,
+    backgroundColor: '#000000',
   },
   drawContainer: {
     position: 'absolute',
